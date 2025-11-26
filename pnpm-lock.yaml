@@ -23,7 +23,7 @@ importers:
 
   apps/worker-example:
     dependencies:
-      '@aetra/edge-sdk':
+      '@aetraapp/edge-sdk':
         specifier: workspace:*
         version: link:../../packages/edge-sdk
     devDependencies:

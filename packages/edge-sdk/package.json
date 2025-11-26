@@ -21,7 +21,7 @@
     "dist"
   ],
   "main": "./dist/index.mjs",
-  "name": "@aetra/edge-sdk",
+  "name": "@aetraapp/edge-sdk",
   "peerDependencies": {
     "hono": "^4"
   },
@@ -33,5 +33,5 @@
   "sideEffects": false,
   "type": "module",
   "types": "./dist/index.d.mts",
-  "version": "0.1.1"
+  "version": "0.1.2"
 }

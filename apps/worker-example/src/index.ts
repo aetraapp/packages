@@ -1,4 +1,4 @@
-import { EdgeSDK } from '@aetra/edge-sdk';
+import { EdgeSDK } from '@aetraapp/edge-sdk';
 
 export default {
   async fetch(request: Request, env: Env, context: ExecutionContext) {

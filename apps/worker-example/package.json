@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@aetra/edge-sdk": "workspace:*"
+    "@aetraapp/edge-sdk": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.8.19",
