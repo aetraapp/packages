@@ -25,7 +25,7 @@
   "peerDependencies": {
     "hono": "^4"
   },
-  "private": true,
+  "private": false,
   "scripts": {
     "build": "tsdown src/index.ts --format esm --dts --sourcemap --minify",
     "dev": "tsdown src/index.ts --format esm --dts --watch --sourcemap"
@@ -33,5 +33,5 @@
   "sideEffects": false,
   "type": "module",
   "types": "./dist/index.d.mts",
-  "version": "0.1.0"
+  "version": "0.1.1"
 }
