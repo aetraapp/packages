@@ -22,7 +22,7 @@ export type EdgeSDKOptions = {
    * The host to use for tracking API requests
    * @default the host name of the request
    * */
-  trackingHost?: string;
+  trackingHost?: string | null;
   /**
    * The options to use for the first-party ajs_anonymous_id cookie
    * @default {
@@ -35,7 +35,7 @@ export type EdgeSDKOptions = {
    * }
    * */
   cookieOptions?: {
-    domain?: string;
+    domain?: string | null;
     httpOnly?: boolean;
     maxAge?: number;
     path?: string;
