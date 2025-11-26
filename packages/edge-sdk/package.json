@@ -28,10 +28,11 @@
   "private": false,
   "scripts": {
     "build": "tsdown src/index.ts --format esm --dts --sourcemap --minify",
-    "dev": "tsdown src/index.ts --format esm --dts --watch --sourcemap"
+    "dev": "tsdown src/index.ts --format esm --dts --watch --sourcemap",
+    "prepublishOnly": "pnpm build"
   },
   "sideEffects": false,
   "type": "module",
   "types": "./dist/index.d.mts",
-  "version": "0.1.3"
+  "version": "0.1.4"
 }
