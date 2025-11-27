@@ -35,7 +35,7 @@ export type EdgeSDKOptions = {
    * }
    * */
   cookieOptions?: {
-    domain?: string | null;
+    domain?: string;
     httpOnly?: boolean;
     maxAge?: number;
     path?: string;
