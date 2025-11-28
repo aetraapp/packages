@@ -89,6 +89,7 @@ export const scriptInjectionMiddleware = (options: EdgeSDKOptions) =>
     for (const { pattern, replacement } of injectionPatterns) {
       if (pattern.test(html)) {
         html = html.replace(pattern, replacement);
+        break;
       }
     }
 
