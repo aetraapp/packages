@@ -17,6 +17,12 @@ export const cookieMiddleware = (options: EdgeSDKOptions) =>
   createMiddleware(async (context, next) => {
     await next();
 
+    const contentType = context.res.headers.get('content-type');
+
+    if (!contentType?.includes('text/html')) {
+      return;
+    }
+
     const { hostname } = new URL(context.req.url);
     const domain = getDomain(hostname);
 
