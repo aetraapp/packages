@@ -77,12 +77,6 @@ export class EdgeSDK {
   middleware() {
     const app = new Hono();
 
-    // Set first-party ajs_anonymous_id cookie on HTML responses
-    app.use('*', cookieMiddleware(this.options));
-
-    // Inject Segment snippet into HTML responses
-    app.use('*', scriptInjectionMiddleware(this.options));
-
     // Handle reset request to delete the ajs_anonymous_id cookie
     app.get(`/${this.options.routePrefix}/reset`, async (context) => {
       deleteCookie(context, 'ajs_anonymous_id');
@@ -164,12 +158,17 @@ export class EdgeSDK {
     });
 
     // Proxy all requests to origin
-    app.all('*', async (context) => await fetch(context.req.raw));
+    app.all(
+      '*',
+      cookieMiddleware(this.options), // Set first-party ajs_anonymous_id cookie
+      scriptInjectionMiddleware(this.options), // Inject Segment snippet into HTML responses
+      async (context) => await fetch(context.req.raw),
+    );
 
     return async (
       request: Request,
       env: unknown,
       context: ExecutionContext,
-    ): Promise<Response | null> => await app.fetch(request, env, context);
+    ): Promise<Response> => await app.fetch(request, env, context);
   }
 }
