@@ -1,9 +1,7 @@
 import type { IntegrationsOptions } from '@segment/analytics-core';
 import * as snippet from '@segment/snippet';
-import { generateCookie, getCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import type { EdgeSDKOptions } from '.';
-import { getDomain } from './utils';
 
 interface LoadOptions {
   integrations?: IntegrationsOptions;
@@ -12,35 +10,6 @@ interface LoadOptions {
     stores?: ('localStorage' | 'memory' | 'cookie')[];
   };
 }
-
-export const cookieMiddleware = (options: EdgeSDKOptions) =>
-  createMiddleware(async (context, next) => {
-    await next();
-
-    const contentType = context.res.headers.get('content-type');
-
-    if (!contentType?.includes('text/html')) {
-      return;
-    }
-
-    const { hostname } = new URL(context.req.url);
-    const domain = getDomain(hostname);
-
-    const anonymousId =
-      getCookie(context, 'ajs_anonymous_id') || crypto.randomUUID();
-
-    const cookie = generateCookie('ajs_anonymous_id', anonymousId, {
-      domain,
-      httpOnly: true,
-      maxAge: 365 * 24 * 60 * 60,
-      path: '/',
-      sameSite: 'Lax',
-      secure: true,
-      ...options.cookieOptions,
-    });
-
-    context.res.headers.append('set-cookie', cookie);
-  });
 
 export const scriptInjectionMiddleware = (options: EdgeSDKOptions) =>
   createMiddleware(async (context, next) => {

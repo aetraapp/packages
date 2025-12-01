@@ -1,9 +1,10 @@
 import type { ExecutionContext } from '@cloudflare/workers-types';
 import type { PageOptions } from '@segment/snippet';
 import { Hono } from 'hono';
-import { deleteCookie, getCookie } from 'hono/cookie';
+import { deleteCookie, generateCookie, getCookie } from 'hono/cookie';
 import { etag } from 'hono/etag';
-import { cookieMiddleware, scriptInjectionMiddleware } from './middleware';
+import { scriptInjectionMiddleware } from './middleware';
+import { getDomain } from './utils';
 
 export type EdgeSDKOptions = {
   /**
@@ -88,14 +89,28 @@ export class EdgeSDK {
     app.get(`/${this.options.routePrefix}/ajs`, etag(), async (context) => {
       const apiKey = this.options.apiKey;
       const routePrefix = this.options.routePrefix;
-      const anonymousId = getCookie(context, 'ajs_anonymous_id');
+      const anonymousId =
+        getCookie(context, 'ajs_anonymous_id') || crypto.randomUUID();
       const response = await fetch(
         `https://cdn.segment.com/analytics.js/v1/${apiKey}/analytics.min.js`,
       );
+      const cookieOptions = this.options.cookieOptions;
+      const { hostname } = new URL(context.req.url);
+      const domain = getDomain(hostname);
+
+      const cookie = generateCookie('ajs_anonymous_id', anonymousId, {
+        domain,
+        httpOnly: true,
+        maxAge: 365 * 24 * 60 * 60,
+        path: '/',
+        sameSite: 'Lax',
+        secure: true,
+        ...cookieOptions,
+      });
 
       let trackingHost = this.options.trackingHost;
       if (!trackingHost) {
-        ({ hostname: trackingHost } = new URL(context.req.url));
+        trackingHost = hostname;
       }
 
       // Modify analytics.js
@@ -111,11 +126,14 @@ export class EdgeSDK {
         `${html}`,
       ].join('\n');
 
-      // Enable revalidation of the response
       const headers = new Headers(response.headers);
+      // Remove origin ETag and Last-Modified headers and allow etag() middleware to generate new ones
       headers.delete('etag');
       headers.delete('last-modified');
-      headers.set('cache-control', 'private, max-age=0, must-revalidate');
+      // Prevent intermediary caching but allow browser caching with revalidation
+      headers.set('cache-control', 'private, no-cache');
+      // Set the ajs_anonymous_id cookie
+      headers.append('set-cookie', cookie);
 
       return new Response(html, {
         headers,
@@ -160,7 +178,6 @@ export class EdgeSDK {
     // Proxy all requests to origin
     app.all(
       '*',
-      cookieMiddleware(this.options), // Set first-party ajs_anonymous_id cookie
       scriptInjectionMiddleware(this.options), // Inject Segment snippet into HTML responses
       async (context) => await fetch(context.req.raw),
     );
