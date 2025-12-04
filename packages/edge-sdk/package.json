@@ -34,5 +34,5 @@
   "sideEffects": false,
   "type": "module",
   "types": "./dist/index.d.mts",
-  "version": "0.1.9"
+  "version": "0.1.10"
 }
