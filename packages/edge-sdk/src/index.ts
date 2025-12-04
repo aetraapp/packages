@@ -117,7 +117,7 @@ export class EdgeSDK {
       let html = await response.text();
       html = [
         // Ensure bundles are loaded with the route prefix
-        `analytics._cdn = '${routePrefix}';`,
+        `analytics._cdn = '/${routePrefix}';`,
         // Update the localStorage anonymous ID from the cookie
         `analytics.setAnonymousId('${anonymousId}');`,
         // Handle reset request to delete the ajs_anonymous_id cookie
